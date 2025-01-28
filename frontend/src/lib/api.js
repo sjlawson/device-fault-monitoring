@@ -29,7 +29,7 @@ export async function fetchTimeSeriesData(macDate) {
     console.log(macDate);
     if (macDate)
     try {
-        const response = await fetch(`/api/data/get_data?mac=${macDate.mac}&date=${macDate.date}`);
+        const response = await fetch(`/api/data/get_data/${macDate.mac}/${macDate.date}`);
         if (!response.ok) throw new Error('Failed to fetch time series data');
         return await response.json();
     } catch (error) {

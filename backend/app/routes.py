@@ -65,11 +65,11 @@ api = Api(app, version='1.0', title='Sample API',
 # Create a namespace for our API endpoints
 ns = api.namespace('api', description='API operations')
 
-@ns.route('/data/get_data')
+@ns.route('/data/get_data/<string:mac>/<string:date>')
 @ns.param('mac', 'MAC address of the device')
 @ns.param('date', 'Date in YYYYMMDD format')
 class DataResource(Resource):
-    def get(self, mac, date):        
+    def get(self, mac, date): 
         """
         Return time series data for a given MAC address and date
 
@@ -84,5 +84,5 @@ class DataResource(Resource):
                            f"get_data?mac={mac}&date={date}")
         data = res.json()
         df = pd.DataFrame(data)
-        
-        return df.to_json()
+
+        return df.to_json(orient='records')

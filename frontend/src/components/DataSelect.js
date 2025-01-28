@@ -39,7 +39,7 @@ const DataSelect = ({selectedMac, setSelectedMac}) => {
             {loading ? (<div>Loading options...</div>) : ( 
             <Select
                 options={options}
-                value={selectedMac}
+                value={{"label": selectedMac.mac, "value": selectedMac.date}}
                 onChange={(item) => setSelectedMac(item.value)}
                 className="basic-multi-select"
                 classNamePrefix="select"
