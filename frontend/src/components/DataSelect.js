@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Select from 'react-select';
-import { fetchSelectOptions } from '../lib/api';
+import { fetchSelectOptions } from '@/lib/api';
 
 const DataSelect = ({selectedMac, setSelectedMac}) => {
     const [options, setOptions] = useState([]);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { fetchTimeSeriesData } from '../lib/api';
-import { mockTimeSeriesData } from '../lib/mockData';
+import { fetchTimeSeriesData } from '@/lib/api';
+import { mockTimeSeriesData } from '@/lib/mockData';
 import dynamic from 'next/dynamic';
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false, })
 
@@ -16,7 +16,7 @@ const TimeSeriesChart = ({macDate}) => {
         try {
             fetchTimeSeriesData(macDate).then((res) => {
                 console.log(res);
-                setData(res.data)}
+                setData(data)}
             );
         } catch (err) {
             setError(err);
@@ -27,8 +27,12 @@ const TimeSeriesChart = ({macDate}) => {
 
     if (loading) return <div>Loading...</div>
     if (error) return <div>{error}</div>
-    if (!data) return <div>No data</div>
-    console.log(data);
+    if (!data) {
+        console.log("No Data", data)
+        return <div>No data</div>
+    }
+    
+    console.log("DATA: ", data);
     return (
         <div className="w-full h-[600px]">
             <Plot

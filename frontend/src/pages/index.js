@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import DataSelect from '../components/DataSelect';
-import Layout from '../components/Layout';
-import TimeSeriesChart from '../components/TimeSeriesChart';
+import DataSelect from '@/components/DataSelect';
+import Layout from '@/components/Layout';
+import TimeSeriesChart from '@/components/TimeSeriesChart';
 
 
 export default function Home() {

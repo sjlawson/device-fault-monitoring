@@ -1,12 +1,13 @@
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_restx import Api, Resource
+import pandas as pd
 from app import app, db
 import sqlalchemy as sa
 from app.forms import LoginForm, RegistrationForm
 from app.models import User
 from urllib.parse import urlsplit
-
+import requests
 
 @app.route('/')
 @app.route('/index')
@@ -64,16 +65,24 @@ api = Api(app, version='1.0', title='Sample API',
 # Create a namespace for our API endpoints
 ns = api.namespace('api', description='API operations')
 
-
-@ns.route('/data/options')
+@ns.route('/data/get_data')
+@ns.param('mac', 'MAC address of the device')
+@ns.param('date', 'Date in YYYYMMDD format')
 class DataResource(Resource):
-    def get(self):
-        """Return a list of sample labels and values"""
-        data = [
-            {"id": 1, "label": "Users", "value": 42},
-            {"id": 2, "label": "Active Sessions", "value": 12},
-            {"id": 3, "label": "Total Posts", "value": 156},
-            {"id": 4, "label": "New Messages", "value": 8}
-        ]
-        return data
+    def get(self, mac, date):        
+        """
+        Return time series data for a given MAC address and date
 
+        source response:
+        {
+            "ix": Array(60901), 
+            "voltage4hzCal": Array(60901), 
+            "sldminAveragePeaksMax": Array(60901)
+        }
+        """
+        res = requests.get(f"https://whisker-interview.vercel.app/data/"
+                           f"get_data?mac={mac}&date={date}")
+        data = res.json()
+        df = pd.DataFrame(data)
+        
+        return df.to_json()
