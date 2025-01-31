@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import Select from 'react-select';
 import { fetchSelectOptions } from '@/lib/api';
+import dynamic from 'next/dynamic';
+const Select = dynamic(import('react-select').then(mod => mod.default), { ssr: false });
+// disable ssr to fix server/client mismatch on id
 
 const DataSelect = ({selectedMac, setSelectedMac}) => {
     const [options, setOptions] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(null);
     const [error, setError] = useState(null);
 
 

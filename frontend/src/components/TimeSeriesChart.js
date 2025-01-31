@@ -6,7 +6,7 @@ const Plot = dynamic(() => import("react-plotly.js"), { ssr: false, })
 
 const TimeSeriesChart = ({macDate}) => {
     const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(null);
     const [error, setError] = useState(null);
     
     useEffect(() => {
@@ -25,11 +25,12 @@ const TimeSeriesChart = ({macDate}) => {
         }
     },[macDate])
 
+    if (loading === null) return <div>Select an option</div>
     if (loading) return <div>Loading...</div>
     if (error) return <div>{error}</div>
     if (!data) {
         console.log("No Data", data)
-        return <div>No data</div>
+        return <div style={{animation: "blink 1s infinite"}}>. . .</div>
     }
     
     console.log("DATA: ", data);

@@ -14,6 +14,7 @@ export default function Home() {
                 
                 <div className="mb-8">
                     <DataSelect 
+                    id="mac-select"
                     selectedMac={selectedMac} 
                     setSelectedMac={setSelectedMac} />
                 </div>
@@ -28,7 +29,7 @@ export default function Home() {
                     
                 </div>
                 <h1 className="text-2xl font-bold mb-6">Time Series Chart</h1>
-                <TimeSeriesChart macDate={selectedMac} />
+                <TimeSeriesChart macDate={selectedMac} id="time-series-chart"/>
             </div>
         </Layout>
     );
