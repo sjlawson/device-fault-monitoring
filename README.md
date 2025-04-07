@@ -1,8 +1,12 @@
-There will be a technical question which you would screen share as you work through. 
+# Sample project
 
-The main elements involve coding against a simple API (provided) and 
+The main elements involve integrating with an API and 
 
 (1) displaying a selector of options based on one API response, 
 
 (2) displaying or plotting (tabular or graph) data from a second endpoint, using Python and/or JavaScript frameworks.
+
+--- 
+
+TODO: Add Lat-Lon data and present devices on a map with ability to draw boundaries and show data for locations.
 
