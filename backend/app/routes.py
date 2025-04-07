@@ -85,7 +85,7 @@ class DataResource(Resource):
             "sldminAveragePeaksMax": Array(60901)
         }
         """
-        res = requests.get(f"https://whisker-interview.vercel.app/data/get_data?mac={mac}&date={date}")
+        res = requests.get(f"{app.config['API_BASE_URL']}/get_data?mac={mac}&date={date}")
         data = res.json()
         df = pd.DataFrame(data)
         df['ix'] = pd.to_datetime(df['ix'])
@@ -166,6 +166,7 @@ class PlotHeatMapResource(Resource):
         df = df.set_index('ix')
         fig = px.imshow(df[['averagePeaksMax']], color_continuous_scale='RdBu_r', origin='lower')
         # fig.show()
+        # TODO: check S3 bucket for image existence
         img_bytes = fig.to_image(format="png")
         img_io = io.BytesIO(img_bytes)
         img_io.seek(0)
