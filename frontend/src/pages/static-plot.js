@@ -18,20 +18,20 @@ export default function StaticPlot() {
     return (
         <Layout>
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-2xl font-bold mb-6">Static Plot View</h1>
-                
+                <h1 className="text-2xl font-bold mb-6">Heatmap View</h1>
+
                 <div className="mb-8">
-                    <DataSelect 
+                    <DataSelect
                         id="mac-select"
-                        selectedMac={selectedMac} 
-                        setSelectedMac={updatePlot} 
+                        selectedMac={selectedMac}
+                        setSelectedMac={updatePlot}
                     />
                 </div>
 
                 {plotUrl && (
                     <div className="mt-8 p-4 bg-white rounded-lg shadow">
                         {/* Using next/image for better performance */}
-                        <img 
+                        <img
                             src={plotUrl}
                             alt="Heatmap Plot"
                             className="w-full"
@@ -42,4 +42,4 @@ export default function StaticPlot() {
             </div>
         </Layout>
     );
-} 
+}

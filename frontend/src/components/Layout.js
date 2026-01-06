@@ -10,7 +10,7 @@ export default function Layout({ children }) {
                             Interactive Plot
                         </Link>
                         <Link href="/static-plot" className="text-gray-700 hover:text-gray-900">
-                            Static Plot
+                            Max Peaks Heatmap
                         </Link>
                     </div>
                 </div>
@@ -20,4 +20,4 @@ export default function Layout({ children }) {
             </main>
         </div>
     );
-} 
+}

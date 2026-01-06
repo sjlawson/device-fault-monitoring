@@ -1,18 +1,22 @@
 from flask import render_template, flash, redirect, url_for, request, send_file
 from flask_login import current_user, login_user, logout_user, login_required
 from flask_restx import Api, Resource
-import pandas as pd
 from app import app, db
-import sqlalchemy as sa
 from app.forms import LoginForm, RegistrationForm
 from app.models import User
 from urllib.parse import urlsplit
-import requests
-import plotly.graph_objects as go
-import io
 from plotly.subplots import make_subplots
-import plotly.express as px
 
+import io
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import requests
+import sqlalchemy as sa
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @app.route('/')
 @app.route('/index')
@@ -74,14 +78,14 @@ ns = api.namespace('api', description='API operations')
 @ns.param('mac', 'MAC address of the device')
 @ns.param('date', 'Date in YYYYMMDD format')
 class DataResource(Resource):
-    def get(self, mac, date): 
+    def get(self, mac, date):
         """
         Return time series data for a given MAC address and date
 
         source response:
         {
-            "ix": Array(60901), 
-            "voltage4hzCal": Array(60901), 
+            "ix": Array(60901),
+            "voltage4hzCal": Array(60901),
             "sldminAveragePeaksMax": Array(60901)
         }
         """
@@ -91,7 +95,7 @@ class DataResource(Resource):
         df['ix'] = pd.to_datetime(df['ix'])
         df = df.resample('1min', on='ix').mean()
         return df.reset_index().to_json(orient='records')
-    
+
 
 @ns.route('/data/get_mac_dates')
 class DataSelectResource(Resource):
@@ -119,20 +123,20 @@ class PlotResource(Resource):
 
         # Create the plot
         fig = make_subplots(specs=[[{"secondary_y": True}]])
-        fig.add_trace(go.Scatter(x=df.index, 
-                         y=df['voltage4hzCal'], 
-                         mode='lines', 
+        fig.add_trace(go.Scatter(x=df.index,
+                         y=df['voltage4hzCal'],
+                         mode='lines',
                          name='voltage 4hz Cal',
                         ),
              secondary_y=False)
-        fig.add_trace(go.Scatter(x=df.index, 
-                         y=df['averagePeaksMax'], 
-                         mode='lines+markers', 
+        fig.add_trace(go.Scatter(x=df.index,
+                         y=df['averagePeaksMax'],
+                         mode='lines+markers',
                          name='avg Peaks Max'
                         ),
              secondary_y=True
                         )
-        
+
         fig.update_layout(
             title=f'Time Series Data for {mac}',
             xaxis_title='Time',
@@ -144,7 +148,7 @@ class PlotResource(Resource):
         img_bytes = fig.to_image(format="png")
         img_io = io.BytesIO(img_bytes)
         img_io.seek(0)
-        
+
         return send_file(
             img_io,
             mimetype='image/png',
@@ -161,16 +165,22 @@ class PlotHeatMapResource(Resource):
         res = requests.get(
             f"https://whisker-interview.vercel.app/data/get_data?mac={mac}&date={date}")
         data = res.json()
+        logger.info(f"Data received for heatmap: {data.keys()}")
         df = pd.DataFrame(data)
         df['ix'] = pd.to_datetime(df['ix'])
         df = df.set_index('ix')
+        if "sldminAveragePeaksMax" in df.columns:
+            logger.info("Renaming sldminAveragePeaksMax to averagePeaksMax")
+            df = df.rename(columns={"sldminAveragePeaksMax": "averagePeaksMax"})
+        if "averagePeaksMax" not in df.columns:
+            logger.error(f"averagePeaksMax column not found in data: {df.columns}")
+            return {"error": "averagePeaksMax column not found in data"}, 400
         fig = px.imshow(df[['averagePeaksMax']], color_continuous_scale='RdBu_r', origin='lower')
-        # fig.show()
         # TODO: check S3 bucket for image existence
         img_bytes = fig.to_image(format="png")
         img_io = io.BytesIO(img_bytes)
         img_io.seek(0)
-        
+
         return send_file(
             img_io,
             mimetype='image/png',
