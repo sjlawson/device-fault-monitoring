@@ -22,9 +22,10 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     environment:
-      FLASK_APP: app
-      FLASK_ENV: development
-      DATABASE_URL: postgresql://flask_user:flask_password@db:5432/flask_db
+      - FLASK_APP=app
+      - FLASK_ENV=development
+      - DATABASE_URL=postgresql://flask_user:flask_password@db:5432/flask_db
+      - API_BASE_URL=${API_BASE_URL}
     volumes:
       - ./backend:/app
     ports:
@@ -48,4 +49,4 @@ services:
       - backend
 
 volumes:
-  postgres_data: 
+  postgres_data:

@@ -8,6 +8,15 @@ The main elements involve integrating with an API and
 
 ---
 
+Running the app:
+
+1. you must add a .env file with a key called `API_BASE_URL` that points to the data source used for this app. 
+2. Docker and docker-compose are required to run the app.
+3. Run `docker-compose up` to start the app.
+4. 
+
+---
+
 ## Interactive Plot
 Display time series data on an interactive Plotly chart showing fluctuations in voltage
 

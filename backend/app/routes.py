@@ -18,6 +18,9 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+API_BASE_URL = app.config['API_BASE_URL']
+
+
 @app.route('/')
 @app.route('/index')
 # @login_required  # uncomment when we care about security
@@ -74,6 +77,14 @@ api = Api(app, version='1.0', title='Sample API',
 # Create a namespace for our API endpoints
 ns = api.namespace('api', description='API operations')
 
+
+@ns.route('/data/list_data')
+class DataListResource(Resource):
+    def get(self):
+        res = requests.get(f"{API_BASE_URL}/list_data?per_page=9")
+        return res.json()
+
+
 @ns.route('/data/get_data/<string:mac>/<string:date>')
 @ns.param('mac', 'MAC address of the device')
 @ns.param('date', 'Date in YYYYMMDD format')
@@ -89,7 +100,7 @@ class DataResource(Resource):
             "sldminAveragePeaksMax": Array(60901)
         }
         """
-        res = requests.get(f"{app.config['API_BASE_URL']}/get_data?mac={mac}&date={date}")
+        res = requests.get(f"{API_BASE_URL}/get_data?mac={mac}&date={date}")
         data = res.json()
         df = pd.DataFrame(data)
         df['ix'] = pd.to_datetime(df['ix'])
@@ -102,12 +113,15 @@ class DataSelectResource(Resource):
     def get(self):
         """
         Return a list of MAC addresses and dates
-        {"page":1,"per_page":2,"total":6,"total_pages":3,"data":[{"mac":"4B-96-AB-51-7F-C4","date":"20221212"},{"mac":"57-B6-A6-51-7F-C4","date":"20221212"}]}
+        {"page":1,"per_page":2,"total":6,"total_pages":3,"data":[
+          {"mac":"4B-96-AB-51-7F-C4","date":"20221212"},
+          {"mac":"57-B6-A6-51-7F-C4","date":"20221212"}]}
         """
-        res = requests.get("https://whisker-interview.vercel.app/data/list_data?page=1&per_page=20")
+        res = requests.get(f"{API_BASE_URL}/list_data?page=1&per_page=20")
         data = res.json()
 
         return data
+
 
 @ns.route('/data/get_plot/<string:mac>/<string:date>')
 @ns.param('mac', 'MAC address of the device')
@@ -115,7 +129,7 @@ class DataSelectResource(Resource):
 class PlotResource(Resource):
     def get(self, mac, date):
         """Return a plotly plot as an image for the given MAC address and date"""
-        res = requests.get(f"https://whisker-interview.vercel.app/data/get_data?mac={mac}&date={date}")
+        res = requests.get(f"{API_BASE_URL}/get_data?mac={mac}&date={date}")
         data = res.json()
         df = pd.DataFrame(data)
         df['ix'] = pd.to_datetime(df['ix'])
@@ -123,19 +137,19 @@ class PlotResource(Resource):
 
         # Create the plot
         fig = make_subplots(specs=[[{"secondary_y": True}]])
-        fig.add_trace(go.Scatter(x=df.index,
-                         y=df['voltage4hzCal'],
-                         mode='lines',
-                         name='voltage 4hz Cal',
-                        ),
-             secondary_y=False)
-        fig.add_trace(go.Scatter(x=df.index,
-                         y=df['averagePeaksMax'],
-                         mode='lines+markers',
-                         name='avg Peaks Max'
-                        ),
-             secondary_y=True
-                        )
+        fig.add_trace(go.Scatter(
+            x=df.index,
+            y=df['voltage4hzCal'],
+            mode='lines',
+            name='voltage 4hz Cal',
+        ), secondary_y=False)
+
+        fig.add_trace(go.Scatter(
+            x=df.index,
+            y=df['averagePeaksMax'],
+            mode='lines+markers',
+            name='avg Peaks Max'
+        ),  secondary_y=True)
 
         fig.update_layout(
             title=f'Time Series Data for {mac}',
@@ -163,7 +177,7 @@ class PlotHeatMapResource(Resource):
     def get(self, mac, date):
         """Return the data used to create the plot for the given MAC address and date"""
         res = requests.get(
-            f"https://whisker-interview.vercel.app/data/get_data?mac={mac}&date={date}")
+            f"{API_BASE_URL}/get_data?mac={mac}&date={date}")
         data = res.json()
         logger.info(f"Data received for heatmap: {data.keys()}")
         df = pd.DataFrame(data)
