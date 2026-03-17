@@ -8,7 +8,7 @@ const TimeSeriesChart = ({macDate}) => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(null);
     const [error, setError] = useState(null);
-    
+
     useEffect(() => {
         console.log("MACDATE", macDate.mac);
         if (macDate.mac)
@@ -32,7 +32,7 @@ const TimeSeriesChart = ({macDate}) => {
         console.log("No Data", data)
         return <div style={{animation: "blink 1s infinite"}}>. . .</div>
     }
-    
+
     console.log("DATA: ", data);
     return (
         <div className="w-full h-[600px]">
@@ -45,7 +45,18 @@ const TimeSeriesChart = ({macDate}) => {
                         type: 'scatter',
                         mode: 'lines+markers',
                         marker: { color: 'blue' },
+			yaxis: 'y1',
+			name: 'Voltage 4Hz Cal (Left)',
                     },
+		    {
+		    	x: data.map(d => d.ix),
+			y: data.map(d => d.averagePeaksMax),
+			type: 'scatter',
+			mode: 'lines+markers',
+			marker: { color: 'red' },
+			yaxis: 'y2',
+			name: 'Average Peaks Max (right)',
+		    }
                 ]}
                 layout={{
                     title: 'Time Series Data',
@@ -53,7 +64,13 @@ const TimeSeriesChart = ({macDate}) => {
                         title: 'Time',
                         rangeslider: { visible: true }
                     },
-                    yaxis: { title: 'Value' },
+                    yaxis: { title: 'Primary Y', side: 'left' },
+		    yaxis2: {
+			title: 'Peaks',
+			side: 'right',
+			overlaying: 'y'
+
+		    },
                     autosize: true
                 }}
                 useResizeHandler={true}
@@ -64,4 +81,4 @@ const TimeSeriesChart = ({macDate}) => {
     )
 };
 
-export default TimeSeriesChart; 
+export default TimeSeriesChart;
