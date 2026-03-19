@@ -12,6 +12,9 @@ export default function Layout({ children }) {
                         <Link href="/static-plot" className="text-gray-700 hover:text-gray-900">
                             Max Peaks Heatmap
                         </Link>
+			<Link href="/heatmap-plot" className="text-gray-700 hover:text-gray-900">
+			Dynamic Heatmap chart
+			</Link>
                     </div>
                 </div>
             </nav>

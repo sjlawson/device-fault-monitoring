@@ -127,6 +127,8 @@ class DataSelectResource(Resource):
 @ns.param('mac', 'MAC address of the device')
 @ns.param('date', 'Date in YYYYMMDD format')
 class PlotResource(Resource):
+    # route not currently used
+    """Return a plotly plot as an image blob for the given MAC address and date"""
     def get(self, mac, date):
         """Return a plotly plot as an image for the given MAC address and date"""
         res = requests.get(f"{API_BASE_URL}/get_data?mac={mac}&date={date}")
@@ -200,3 +202,27 @@ class PlotHeatMapResource(Resource):
             mimetype='image/png',
             as_attachment=False
         )
+
+
+@ns.route('/data/get_heatmap_data/<string:mac>/<string:date>')
+@ns.param('mac', 'MAC address of the device')
+@ns.param('date', 'Date in YYYYMMDD format')
+class GetHeatMapPlotDataResource(Resource):
+    def get(self, mac, date):
+        """Return the data used to create the plot for the given MAC address and date"""
+        res = requests.get(
+            f"{API_BASE_URL}/get_data?mac={mac}&date={date}")
+        data = res.json()
+        logger.info(f"Data received for heatmap: {data.keys()}")
+        df = pd.DataFrame(data)
+        # df['ix'] = pd.to_datetime(df['ix'])
+        # df = df.set_index('ix')
+        if "sldminAveragePeaksMax" in df.columns:
+            logger.info("Renaming sldminAveragePeaksMax to averagePeaksMax")
+            df = df.rename(columns={"sldminAveragePeaksMax": "averagePeaksMax"})
+        if "averagePeaksMax" not in df.columns:
+            logger.error(f"averagePeaksMax column not found in data: {df.columns}")
+            return {"error": "averagePeaksMax column not found in data"}, 400
+
+        logger.info("DATAFRAME", df[['ix', 'averagePeaksMax']].head())
+        return df[['ix', 'averagePeaksMax']].to_json(orient='records')

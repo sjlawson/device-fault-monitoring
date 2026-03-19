@@ -25,13 +25,27 @@ export async function fetchTimeSeriesData(macDate) {
      */
 
     console.log(macDate);
-    if (macDate)
-    try {
-        const response = await fetch(`/api/data/get_data/${macDate.mac}/${macDate.date}`);
-        if (!response.ok) throw new Error('Failed to fetch time series data');
-        return await response.json();
-    } catch (error) {
-        console.error('Error fetching time series data:', error);
-        throw error;
+    if (macDate) {
+	try {
+            const response = await fetch(`/api/data/get_data/${macDate.mac}/${macDate.date}`);
+            if (!response.ok) throw new Error('Failed to fetch time series data');
+            return await response.json();
+	} catch (error) {
+            console.error('Error fetching time series data:', error);
+            throw error;
+	}
+    }
+}
+
+export async function fetchHeatmapData(macDate) {
+    if (macDate) {
+	try {
+	    const response = await fetch(`/api/data/get_heatmap_data/${macDate.mac}/${macDate.date}`);
+	    if (!response.ok) throw new Error('Failed to fetch heatmap plot');
+	    return await response.json()
+	} catch (error) {
+	    console.error('Error fetching heatmap plot:', error);
+	    throw error;
+	}
     }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchTimeSeriesData } from '@/lib/api';
-// import { mockTimeSeriesData } from '@/lib/mockData';
+
 import dynamic from 'next/dynamic';
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false, })
 
